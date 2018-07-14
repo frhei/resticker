@@ -1,5 +1,5 @@
-IMAGE=mazzolino/restic
-ARCH=amd64
+IMAGE=frhei/restic
+ARCH=arm
 
 default: image push manifest
 
