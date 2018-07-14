@@ -5,8 +5,8 @@ FROM golang:alpine AS builder
 
 RUN apk add --update --no-cache curl git
 
-ARG RESTIC_VERSION=0.7.3
-ARG RESTIC_SHA256=6d795a5f052b3a8cb8e7571629da14f00e92035b7174eb20e32fd1440f68aaff
+ARG RESTIC_VERSION=0.9.1
+ARG RESTIC_SHA256=359d3b8e555a9952f2b98c81ee3dbec8dc441e12789c436ca564762aaacec095
 ARG GO_CRON_VERSION=0.0.2
 ARG GO_CRON_SHA256=ca2acebf00d61cede248b6ffa8dcb1ef5bb92e7921acff3f9d6f232f0b6cf67a
 
@@ -33,11 +33,16 @@ RUN curl -sL -o restic.tar.gz https://github.com/restic/restic/releases/download
 #
 # Final image
 #
-FROM alpine:3.6
+FROM arm32v6/alpine:latest
 
 RUN apk add --update --no-cache ca-certificates fuse nfs-utils openssh
 
 ENV RESTIC_REPOSITORY /mnt/restic
+
+RUN apk add tzdata \
+ && cp /usr/share/zoneinfo/Europe/Berlin /etc/localtime \
+ && echo "Europe/Berlin" >  /etc/timezone \
+ && apk del tzdata
 
 COPY --from=builder /usr/local/bin/* /usr/local/bin/
 COPY backup /usr/local/bin/
